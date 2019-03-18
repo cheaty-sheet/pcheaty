@@ -42,7 +42,7 @@
 		"@types/mocha": "^2.2.42"
 	},
 	"dependencies": {
-		"@cheaty-sheet/cheaty": "^0.5.0"
+		"@cheaty-sheet/cheaty": "^0.6.0"
 	},
 	"repository": {
 		"type": "git",

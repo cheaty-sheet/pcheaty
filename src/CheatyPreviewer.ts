@@ -25,7 +25,12 @@ export default class CheatyPreviewer {
 	
 	public async render(editor: vscode.TextEditor | undefined) {
 		if (editor) {
-			this._panel.webview.html = await this.generateSaveButton() + await this.computeOutput(editor);
+			try {
+				const output = await this.computeOutput(editor);
+				this._panel.webview.html = this.generateSaveButton() + output;
+			} catch ({ message }) {
+				this._panel.webview.html = this.wrapMessage(message);
+			}
 		}
 	}
 
@@ -65,10 +70,10 @@ export default class CheatyPreviewer {
 			if (isYamlException) {
 				const firstLine = stack.split('\n')[0];
 				const readableError = firstLine.substring(0, firstLine.length-1) + '.';
-				return Promise.resolve(readableError);
+				throw new Error(readableError);
 			}
 
-			return Promise.resolve(`
+			throw new Error(`
 				This code cannot parsed as a Cheaty sheet. <br>
 				Examples can be found at 
 				<a href="https://github.com/cheaty-sheet/Cheaty">https://github.com/cheaty-sheet/Cheaty</a>
@@ -92,12 +97,15 @@ export default class CheatyPreviewer {
 	private generateSaveButton(): string {		
 		return `
 			<style>
+				body { color: inherit !important; }
+
 				#pcheaty-save {
 					margin: 10px auto;
 					padding: 5px;
 					background-color: #00BF5F;
 					color: #fff;
 					border: none;
+					border-radius: 1.2em;
 				}
 
 				#pcheaty-save:hover { cursor: pointer; }
@@ -119,6 +127,14 @@ export default class CheatyPreviewer {
 				}());
 			</script>
 		`;
+	}
+
+	private wrapMessage(message: string): string {
+		return `<!DOCTYPE html>
+			<html lang="en">
+				<head><meta charset="UTF-8"></head>
+				<body>${message}</body>
+			</html>`;
 	}
 	
 }
