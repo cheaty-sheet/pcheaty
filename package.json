@@ -25,6 +25,12 @@
 				"command": "extension.pcheaty",
 				"title": "Preview Cheaty Sheet"
 			}
+		],
+		"snippets": [
+			{
+				"language": "yaml",
+				"path": "./resources/snippets.json"
+			}
 		]
 	},
 	"scripts": {
