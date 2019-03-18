@@ -1,0 +1,82 @@
+{
+  "Generate cheat sheet": {
+    "scope": "yaml",
+    "prefix": "cheaty",
+    "body": [
+      "title: ${1:title}",
+      "description: ${2:description}",
+      "options:",
+      "\tsize: A4",
+      "\tauthor: cheaty sheet",
+      "\tlogo: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "blocks:",
+      "\t- title: My first markdown section",
+      "\t\tsections:",
+      "\t\t\t- type: markdown",
+      "\t\t\t\tcontent: My first **content**",
+      "\t- title: My first text section",
+      "\t\tsections:",
+      "\t\t\t- type: text",
+      "\t\t\t\tcontent: My first content",
+      "\t- title: My first code section",
+      "\t\tsections:",
+      "\t\t\t- type: code",
+      "\t\t\t\tcontent: >-",
+      "\t\t\t\t\tcheaty.parseFromDisk('./cheatsheet.yml', 'YML')",
+      "\t\t\t\t\t\t.then(sheet => {",
+      "\t\t\t\t\t\t\tsheet.render('HTML').then(htmlRender => {",
+      "\t\t\t\t\t\t\t\thtmlRender.saveToDisk('./cheatsheet.html')",
+      "\t\t\t\t\t\t\t})",
+      "\t\t\t\t\t\t});"
+    ]
+  },
+  "options": {
+    "scope": "yaml",
+    "prefix": "cheaty_options",
+    "body": [
+      "options:",
+      "\tsize: A4",
+      "\tauthor: cheaty sheet",
+      "\tlogo: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+      "\twatermark: watermark",
+      "\thighlight_theme: github"
+    ]
+  },
+  "block": {
+    "scope": "yaml",
+    "prefix": "cheaty_block",
+    "body": [
+      "- title: ${1:title}",
+      "\tsections:",
+      "\t\t- type: markdown",
+      "\t\t\tcontent: ${2:My first **content**}"
+    ]
+  },
+  "text section": {
+    "scope": "yaml",
+    "prefix": "cheaty_text_section",
+    "body": ["- type: text", "\tcontent: ${1:My first content}"]
+  },
+  "markdown section": {
+    "scope": "yaml",
+    "prefix": "cheaty_markdown_section",
+    "body": [
+      "- type: markdown",
+      "\tcontent: ${1:My first **link** to [google](http://www.google.com)}"
+    ]
+  },
+  "code section": {
+    "scope": "yaml",
+    "prefix": "cheaty_code_section",
+    "body": [
+      "- type: code",
+      "\tcontent: >-",
+      "\t\tcheaty.parseFromDisk('./cheatsheet.yml', 'YML')",
+      "\t\t\t.then(sheet => {",
+      "\t\t\t\tsheet.render('HTML').then(htmlRender => {",
+      "\t\t\t\t\thtmlRender.saveToDisk('./cheatsheet.html')",
+      "\t\t\t\t})",
+      "\t\t\t});"
+    ]
+  }
+}
