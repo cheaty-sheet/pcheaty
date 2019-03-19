@@ -98,6 +98,7 @@ export default class CheatyPreviewer {
 		return `
 			<style>
 				body { color: inherit !important; }
+				code { color: inherit !important; }
 
 				#pcheaty-save {
 					margin: 10px auto;
