@@ -21,6 +21,7 @@
       "\t- title: My first code section",
       "\t\tsections:",
       "\t\t\t- type: code",
+      "\t\t\t\tlanguage: javascript",
       "\t\t\t\tcontent: |-",
       "\t\t\t\t\tcheaty.parseFromDisk('./cheatsheet.yml', 'YML')",
       "\t\t\t\t\t\t.then(sheet => {",
@@ -70,6 +71,7 @@
     "prefix": "cheaty_code_section",
     "body": [
       "- type: code",
+      "\tlanguage: javascript",
       "\tcontent: |-",
       "\t\tcheaty.parseFromDisk('./cheatsheet.yml', 'YML')",
       "\t\t\t.then(sheet => {",
