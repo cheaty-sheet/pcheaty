@@ -28,6 +28,7 @@ export default class CheatyPreviewer {
 				let html = await this.computeOutput(editor);
 				html = this.addStyle(html);
 				html = this.addSaveButton(html);
+				html = this.addBaseHeader(html, editor.document.fileName);
 
 				this._panel.webview.html = html;
 			} catch ({ message }) {
@@ -101,6 +102,11 @@ export default class CheatyPreviewer {
 			this._uri = uri;
 		}
 	}
+
+	private addBaseHeader(html: string, href: string) {
+		const header = `<base href="${href}">`;
+		return html.replace('</head>', header + '</head>');
+	}
 	private addStyle(html: string) {
 		const style = `
 		<style>
@@ -136,7 +142,10 @@ export default class CheatyPreviewer {
 		}());
 	</script>`;
 		const button = '<button id="pcheaty-save" type="button">Save</button>';
-		html = html.replace('<div class="sheet padding-10mm">', button+'<div class="sheet padding-10mm">');
+		html = html.replace(
+			'<div class="sheet padding-10mm">',
+			button + '<div class="sheet padding-10mm">'
+		);
 		html = html.replace('</body>', script + '</body>');
 		return html;
 	}
