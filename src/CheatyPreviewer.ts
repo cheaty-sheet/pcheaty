@@ -5,7 +5,6 @@ import { homedir } from 'os';
 import { writeFileSync } from 'fs';
 
 export default class CheatyPreviewer {
-
 	private _parser: any;
 	private _renderer: any;
 	private _uri: vscode.Uri;
@@ -22,12 +21,15 @@ export default class CheatyPreviewer {
 			{ enableScripts: true }
 		);
 	}
-	
+
 	public async render(editor: vscode.TextEditor | undefined) {
 		if (editor) {
 			try {
-				const output = await this.computeOutput(editor);
-				this._panel.webview.html = this.generateSaveButton() + output;
+				let html = await this.computeOutput(editor);
+				html = this.addStyle(html);
+				html = this.addSaveButton(html);
+
+				this._panel.webview.html = html;
 			} catch ({ message }) {
 				this._panel.webview.html = this.wrapMessage(message);
 			}
@@ -35,19 +37,23 @@ export default class CheatyPreviewer {
 	}
 
 	public listen() {
-		const subscriptionOnChange = vscode.window.onDidChangeTextEditorSelection(async () => {
-			await this.render(vscode.window.activeTextEditor);
-		});
+		const subscriptionOnChange = vscode.window.onDidChangeTextEditorSelection(
+			async () => {
+				await this.render(vscode.window.activeTextEditor);
+			}
+		);
 
-		const subscriptionOnSave = this._panel.webview.onDidReceiveMessage((message) => {			
-			if (message.command === 'pcheaty-save') {
-				const editor = vscode.window.visibleTextEditors[0];
-				
-				if (editor) {
-					this.saveContent(editor);
+		const subscriptionOnSave = this._panel.webview.onDidReceiveMessage(
+			message => {
+				if (message.command === 'pcheaty-save') {
+					const editor = vscode.window.visibleTextEditors[0];
+
+					if (editor) {
+						this.saveContent(editor);
+					}
 				}
 			}
-		});
+		);
 
 		this._panel.onDidDispose(() => {
 			subscriptionOnChange.dispose();
@@ -55,11 +61,12 @@ export default class CheatyPreviewer {
 		});
 	}
 
-	private async computeOutput(editor: vscode.TextEditor): Promise<string> {		
+	private async computeOutput(editor: vscode.TextEditor): Promise<string> {
 		const cheatyContent = editor.document.getText();
-		
+		const documentUri = editor.document.fileName;
+
 		try {
-			const sheet  = await this._parser.parseFromString(cheatyContent);
+			const sheet = await this._parser.parseFromString(cheatyContent);
 			const render = await this._renderer.render(sheet);
 
 			return render.toString();
@@ -69,7 +76,8 @@ export default class CheatyPreviewer {
 
 			if (isYamlException) {
 				const firstLine = stack.split('\n')[0];
-				const readableError = firstLine.substring(0, firstLine.length-1) + '.';
+				const readableError =
+					firstLine.substring(0, firstLine.length - 1) + '.';
 				throw new Error(readableError);
 			}
 
@@ -93,10 +101,9 @@ export default class CheatyPreviewer {
 			this._uri = uri;
 		}
 	}
-
-	private generateSaveButton(): string {		
-		return `
-			<style>
+	private addStyle(html: string) {
+		const style = `
+		<style>
 				body { color: inherit !important; }
 				code { color: inherit !important; }
 
@@ -111,23 +118,27 @@ export default class CheatyPreviewer {
 
 				#pcheaty-save:hover { cursor: pointer; }
 				#pcheaty-save:focus { outline: 0; }
-			</style>
+			</style>`;
+		return html.replace('</head>', style + '</head>');
+	}
 
-			<button id="pcheaty-save" type="button">Save</button>
+	private addSaveButton(html: string) {
+		const script = `<script>
+		(function() {
+			const vscode = acquireVsCodeApi();
+			const saveButton = document.getElementById('pcheaty-save');
 
-			<script>
-				(function() {
-					const vscode = acquireVsCodeApi();
-					const saveButton = document.getElementById('pcheaty-save');
-		
-					saveButton.addEventListener('click', () => 
-						vscode.postMessage({
-							command: 'pcheaty-save'
-						})
-					);
-				}());
-			</script>
-		`;
+			saveButton.addEventListener('click', () => 
+				vscode.postMessage({
+					command: 'pcheaty-save'
+				})
+			);
+		}());
+	</script>`;
+		const button = '<button id="pcheaty-save" type="button">Save</button>';
+		html = html.replace('<div class="sheet padding-10mm">', button+'<div class="sheet padding-10mm">');
+		html = html.replace('</body>', script + '</body>');
+		return html;
 	}
 
 	private wrapMessage(message: string): string {
@@ -137,5 +148,4 @@ export default class CheatyPreviewer {
 				<body>${message}</body>
 			</html>`;
 	}
-	
 }
